@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="ion-text-center">Planes de Pago</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+ <div *ngIf="(planPagoDocs$ | async) === null" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando planes de pago...</p>
+  </div>
+
+
+<ion-card *ngFor="let doc of planPagoDocs$ | async" class="plan-pago-card">
+    <ion-card-header  class="plan-pago-card-header">
+      <ion-card-title class="plan-pago-card-title">Plan de Pago: {{ doc.plan }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content class="plan-pago-card-content">
+      <div *ngIf="doc.pdf">
+        <a [href]="doc.pdf" target="_blank" rel="noopener noreferrer" class="pdf-link">Abrir PDF</a>
+      </div>
+      <div *ngIf="!doc.pdf">
+        <p>No hay PDF disponible</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+

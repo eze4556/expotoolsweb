@@ -1,0 +1,43 @@
+/* Estilos generales */
+ion-content {
+  --background: #fff;
+}
+
+.title-afip {
+  font-size: 24px;
+}
+
+/* Estilos de la cuadrícula */
+.marcas-grid ion-row {
+  align-items: center;
+}
+
+.marca-card {
+  margin-bottom: 12px; /* Reducir el margen inferior para compactar visualmente */
+  border: 1px solid #eee;
+  border-radius: 8px;
+  text-align: center;
+  --padding-top: 0px;
+   height: auto; /* Ajusta la altura de la tarjeta */
+  display: flex; /* Usa flexbox para centrar la imagen verticalmente */
+  flex-direction: column;
+}
+
+.marca-card ion-card-header {
+    background-color: transparent;
+}
+
+.marca-card ion-img {
+  max-height: 100%; /* Permite que la imagen ocupe toda la altura disponible */
+  width: auto;
+  margin: 0 auto;
+  object-fit: contain; /* Asegura que la imagen mantenga su relación de aspecto y se muestre completa */
+}
+
+
+.no-marcas-card {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+
