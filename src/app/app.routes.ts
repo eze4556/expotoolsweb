@@ -38,12 +38,12 @@ export const routes: Routes = [
     loadComponent: () => import('./views/facturacion/facturacion.component').then((m) => m.FacturacionComponent),
   },
   {
-    path: 'planpago',
-    loadComponent: () => import('./views/plan-pago/plan-pago.component').then((m) => m.PlanPagoComponent),
+    path: 'product/:id',
+    loadComponent: () => import('./views/plan-pago/product-detail.component').then((m) => m.ProductDetailComponent),
   },
   {
-    path: 'recibosueldo',
-    loadComponent: () => import('./views/recibo-sueldo/recibo-sueldo.component').then((m) => m.ReciboSueldoComponent),
+    path: 'register',
+    loadComponent: () => import('./views/recibo-sueldo/register.component').then((m) => m.RegisterComponent),
   },
   {
     path: '',

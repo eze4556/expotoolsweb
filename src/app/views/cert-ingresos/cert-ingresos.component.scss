@@ -1,6 +1,10 @@
 ion-content {
-  --background: hsla(24, 100%, 1%, 0.966); /* Color de fondo gris claro */
+
+  --background: #34495E;
+ /* Color de fondo gris claro */
 }
+
+
 
 .certificacion-card {
   margin: 10px auto; /* Reducir el margen superior e inferior */
@@ -28,7 +32,7 @@ ion-grid, ion-row {
 .certificacion-card-content {
   padding: 10px;
   display: flex;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .pdf-link {
@@ -75,3 +79,4 @@ ion-col {
     padding: 5px 10px;
   }
 }
+

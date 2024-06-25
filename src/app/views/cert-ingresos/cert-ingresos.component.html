@@ -3,40 +3,44 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center" style="color: #ffffff;">Certificación de Ingresos</ion-title>
-    <ion-title class="ion-text-center" style="color: #ffffff;">Certificación de Ingresos</ion-title>
+    <ion-title class="ion-text-center" style="color: #ffffff;">Categorias</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-grid fixed>
+<ion-content>
+  <ion-grid>
+    <!-- Sección de Categorías -->
     <ion-row>
-      <ion-col size="12">
-        <ion-item class="year-select-item">
-          <ion-label>Seleccione un año</ion-label>
-          <ion-select [(ngModel)]="selectedYear" (ionChange)="onYearChange($event)" class="year-select">
-            <ion-select-option *ngFor="let year of uniqueYears" [value]="year">{{ year }}</ion-select-option>
-          </ion-select>
-        </ion-item>
+      <ion-col size="12" size-md="6" size-lg="4" *ngFor="let categoria of categorias">
+        <ion-card (click)="onCategoriaClick(categoria.id)">
+          <img [src]="categoria.imagen" *ngIf="categoria.imagen" alt="{{ categoria.nombre }}">
+          <ion-card-header>
+            <ion-card-title>{{ categoria.nombre }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
       </ion-col>
     </ion-row>
 
-    <ion-row *ngIf="selectedYear">
+
+
+
+    <!-- Sección de Productos de la Categoría Seleccionada -->
+    <ion-row *ngIf="productos.length > 0">
       <ion-col size="12">
-        <ion-card class="certificacion-card">
-          <ion-card-header class="certificacion-card-header">
-            <ion-card-title class="certificacion-card-title ion-text-center">PDFs del Año {{ selectedYear }}</ion-card-title>
+        <h2>Productos de {{ selectedCategoria?.nombre }}</h2>
+      </ion-col>
+      <ion-col size="12" size-md="6" size-lg="4" *ngFor="let producto of productos">
+        <ion-card>
+          <img [src]="producto.imagen" *ngIf="producto.imagen" alt="{{ producto.nombre }}">
+          <ion-card-header>
+            <ion-card-title>{{ producto.nombre }}</ion-card-title>
           </ion-card-header>
-
-
-            <ion-grid>
-              <ion-row>
-                <ion-col size="12" size-md="6" *ngFor="let pdf of pdfs$ | async">
-                  <a [href]="pdf.pdf" target="_blank" class="pdf-link">Ver PDF</a>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-
+          <ion-card-content>
+            <p>{{ producto.descripcion }}</p>
+            <p><strong>Precio:</strong> {{ producto.precio }}</p>
+            <p><strong>Precio Final:</strong> {{ producto.precioFinal }}</p>
+            <p><strong>Marca:</strong> {{ producto.marca }}</p>
+          </ion-card-content>
         </ion-card>
       </ion-col>
     </ion-row>

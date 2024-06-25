@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonFooter, IonSegment,IonCardHeader,  IonCardTitle, IonCardContent, IonCardSubtitle, IonSegmentButton, IonChip,IonAvatar, IonSearchbar,IonApp, IonTitle, IonContent, IonLabel, IonList, IonItem, IonCard, IonInput, IonSpinner, IonButtons, IonButton, IonIcon, IonImg, IonCol, IonRow, IonBackButton, IonGrid } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonFooter,IonSegment,IonCardHeader, IonThumbnail, IonCardTitle, IonCardContent, IonCardSubtitle, IonSegmentButton, IonChip,IonAvatar, IonSearchbar,IonApp, IonTitle, IonContent, IonLabel, IonList, IonItem, IonCard, IonInput, IonSpinner, IonButtons, IonButton, IonIcon, IonImg, IonCol, IonRow, IonBackButton, IonGrid } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
+
 import { IoniconsModule } from '../common/modules/ionicons.module';
 import { Router } from '@angular/router';
 import { AlertController,  IonicModule } from '@ionic/angular';
@@ -9,6 +10,8 @@ import { UserI } from '../common/models/users.models';
 import { CommonModule } from '@angular/common';
 import { Producto } from '../common/models/producto.model';
 import { Observable } from 'rxjs';
+import { AuthService } from '../common/services/auth.service';
+
 
 
 
@@ -24,6 +27,8 @@ import { Observable } from 'rxjs';
     CommonModule,
     IonChip,
     IonAvatar,
+
+    IonThumbnail,
 IonFooter,
 IonCardHeader,
     IonApp,
@@ -31,47 +36,48 @@ IonCardSubtitle,
     IonSearchbar,
     IonSegment, IonSegmentButton,
     IonCardTitle,
-    IonCardContent
+    IonCardContent,
+
   ],
 })
 export class HomePage implements OnInit {
 
 productos: Producto[] = [];
+productosFiltrados: Producto[] = [];
+producto: Producto | undefined;
 
- currentSlide = 0;
-  slides = [
-    { img: 'assets/img/product1.jpg', alt: 'Product 1' },
-    { img: 'assets/img/product2.jpg', alt: 'Product 2' },
-    { img: 'assets/img/product3.jpg', alt: 'Product 3' },
-  ];
+ showMasInfo = false;
+selectedProduct: any;
+  user$: Observable<any | null> = this.authService.user$;
 
-  prevSlide() {
-    if (this.currentSlide > 0) {
-      this.currentSlide--;
-    } else {
-      this.currentSlide = this.slides.length - 1;
-    }
+
+// Método para mostrar los detalles del producto al pasar el mouse
+  showDetails(product: any) {
+    this.selectedProduct = product;
   }
 
-  nextSlide() {
-    if (this.currentSlide < this.slides.length - 1) {
-      this.currentSlide++;
-    } else {
-      this.currentSlide = 0;
-    }
+  // Método para ocultar los detalles del producto al quitar el mouse
+  hideDetails() {
+    this.selectedProduct = null;
   }
 
   openWhatsApp() {
-  const whatsappNumber = '5491167554362'; 
+  const whatsappNumber = '5491167554362';
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
   window.open(whatsappUrl, '_blank');
 }
 
 
+comprar() {
+    const message = `Hola, estoy interesado en el producto ${this.producto.nombre}`;
+    const whatsappUrl = `https://wa.me/5491167554362?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }
+
 
 
   constructor( private router: Router,private firestoreService: FirestoreService,
-    private alertController: AlertController,) {
+    private alertController: AlertController,private authService: AuthService) {
 
 
   }
@@ -80,13 +86,8 @@ productos: Producto[] = [];
 
 
 
-
-   async logout() {
-
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userDni');
-    this.router.navigateByUrl('/login');
-    this.mostrarAlerta('Sesión cerrada correctamente.');
+logout() {
+    this.authService.logout();
   }
 
 
@@ -134,26 +135,62 @@ navigateToAfip() {
     this.router.navigate(['/declaracion']);
   }
 
-  user: UserI | undefined;
-  userId: string | null = null;
+navigateToDetail(product:Producto){
+  this.router.navigate(['/product', product.id]);
+}
+
+
+
+
 
 
 
  async ngOnInit() {
-    this.userId = localStorage.getItem('userId');
-    if (this.userId) {
-      this.user = await this.firestoreService.getUserData(this.userId);
-      await this.mostrarAlertaBienvenida(this.user.nombre);
-    }
 
-this.cargarProductos();
 
+
+await this.cargarProductos();
+
+this.clearSearch();
 
   }
 
-   async cargarProductos() {
+   closeSearchResults() {
+    this.productosFiltrados = []; // Vacía el array de productos filtrados para ocultar la lista
+  }
+
+    clearSearch() {
+    const searchbar = document.querySelector('ion-searchbar');
+    if (searchbar) {
+      searchbar.value = ''; // Reinicia el valor del ion-searchbar a una cadena vacía
+    }
+  }
+
+ async cargarProductos() {
     this.productos = await this.firestoreService.getProductos();
+    this.productosFiltrados = this.productos;
     console.log('Productos obtenidos:', this.productos);
+  }
+
+
+  search(event: any) {
+    const query = event.target.value.toLowerCase();
+    if (query.trim() === '') {
+      this.productosFiltrados = [];
+    } else {
+      this.productosFiltrados = this.productos.filter(producto =>
+        producto.nombre.toLowerCase().includes(query)
+      );
+    }
+  }
+
+  navigateToProduct(product: Producto) {
+    // Implementa la navegación al detalle del producto si es necesario
+    console.log('Navegar a producto:', product);
+  }
+
+   navigateTologin() {
+    this.router.navigate(['/login']);
   }
 
 

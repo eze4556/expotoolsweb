@@ -22,6 +22,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Marca } from '../../common/models/marca.model';
+import { Producto } from 'src/app/common/models/producto.model';
 
 @Component({
   selector: 'app-afip',
@@ -56,12 +57,43 @@ export class AfipComponent implements OnInit {
   userId: string;
   afip: any;
 
+
   marcas: Marca[] = [];
+  productos: Producto[] = [];
+  selectedMarca: Marca | undefined;
+
 
   constructor(private firestoreService: FirestoreService) {}
 
  async ngOnInit() {
     this.marcas = await this.firestoreService.getMarcas();
+  }
+
+
+  //  async ngOnInit() {
+  //   this.loadCategories();
+  // }
+
+  async loadMarcas() {
+    try {
+      this.marcas = await this.firestoreService.getMarcas();
+    } catch (error) {
+      console.error('Error al obtener marcas:', error);
+    }
+  }
+
+  async loadProductosByMarca(marcaId: string) {
+    try {
+      this.productos = await this.firestoreService.getProductosByMarca(marcaId);
+      this.selectedMarca = this.marcas.find(marca => marca.id === marcaId);
+      console.log('Productos obtenidos de la marca:', this.productos);
+    } catch (error) {
+      console.error('Error al obtener productos por marca:', error);
+    }
+  }
+
+  onMarcaClick(marcaId: string) {
+    this.loadProductosByMarca(marcaId);
   }
 
 

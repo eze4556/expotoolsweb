@@ -4,6 +4,8 @@ import { FirestoreService } from '../../common/services/firestore.service';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Categoria } from 'src/app/common/models/categoria.model';
+import { Producto } from 'src/app/common/models/producto.model';
 
 @Component({
   selector: 'app-cert-ingresos',
@@ -13,32 +15,37 @@ import { FormsModule } from '@angular/forms';
   imports: [IonToolbar, IonBackButton, IonTitle, IonButtons, IonHeader, IonItem, IonInput, IonLabel, IonContent, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonList, IonCardContent, IonSelect, IonSelectOption, CommonModule, FormsModule],
 })
 export class CertIngresosComponent implements OnInit {
-  userId: string;
-  uniqueYears: string[] = [];
-  selectedYear: string | null = null;
-  pdfs$: Observable<any[]> | null = null;
+
+ categorias: Categoria[] = [];
+  productos: Producto[] = [];
+  selectedCategoria: Categoria | undefined;
 
   constructor(private firestoreService: FirestoreService) {}
 
   async ngOnInit() {
-    this.userId = localStorage.getItem('userId');
-    if (this.userId) {
-      this.uniqueYears = await this.firestoreService.getUniqueYears(this.userId);
-      console.log('Años únicos obtenidos:', this.uniqueYears); // Depuración
-    } else {
-      console.error('No se encontró userId en localStorage');
+    this.loadCategories();
+  }
+
+  async loadCategories() {
+    try {
+      this.categorias = await this.firestoreService.getCategorias();
+    } catch (error) {
+      console.error('Error al obtener categorías:', error);
     }
   }
 
-  onYearChange(event: any) {
-    this.selectedYear = event.detail.value;
-    this.loadPdfsForYear(this.selectedYear);
+  async loadProductosByCategoria(categoriaId: string) {
+    try {
+      this.productos = await this.firestoreService.getProductosByCategoria(categoriaId);
+      this.selectedCategoria = this.categorias.find(categoria => categoria.id === categoriaId);
+      console.log('Productos obtenidos de la categoría:', this.productos);
+    } catch (error) {
+      console.error('Error al obtener productos por categoría:', error);
+    }
   }
 
-  loadPdfsForYear(year: string) {
-    this.pdfs$ = this.firestoreService.getCertificacionIngresosByYear(this.userId, year);
-    this.pdfs$.subscribe(pdfs => {
-      console.log('PDFs para el año ' + year, pdfs); // Depuración
-    });
+  onCategoriaClick(categoriaId: string) {
+    this.loadProductosByCategoria(categoriaId);
   }
+
 }

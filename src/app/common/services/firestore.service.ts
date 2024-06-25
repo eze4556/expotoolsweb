@@ -19,6 +19,8 @@ import {
   where
 } from '@angular/fire/firestore';
 
+
+
 import {
   Storage,
   ref,
@@ -26,7 +28,6 @@ import {
   getDownloadURL,
   deleteObject,
 } from '@angular/fire/storage';
-
 
 
 
@@ -39,7 +40,6 @@ import { UserI } from '../models/users.models';
 import { Marca } from '../models/marca.model';
 import { Categoria } from '../models/categoria.model';
 import { Producto } from '../models/producto.model';
-
 
 
 // Convertidor genérico para Firestore
@@ -136,14 +136,23 @@ async getCategoriaById(id: string): Promise<Categoria | undefined> {
     return docSnap.exists() ? ({ id: docSnap.id, ...docSnap.data() } as Producto) : undefined;
   }
 
-  async getProductosByCategoria(categoriaId: string): Promise<Producto[]> {
-    const productosSnapshot = await getDocs(query(collection(this.firestore, 'productos'), where('categoria', '==', categoriaId)));
-    return productosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Producto[];
-  }
 
+  // Obtener productos por ID de categoría
+ async getProductosByCategoria(categoriaId: string): Promise<Producto[]> {
+  const productosSnapshot = await getDocs(
+    query(collection(this.firestore, 'productos'), where('categoria.id', '==', categoriaId))
+  );
+  return productosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Producto[];
+}
+
+
+// Obtener productos por ID de marca
   async getProductosByMarca(marcaId: string): Promise<Producto[]> {
-    const productosSnapshot = await getDocs(query(collection(this.firestore, 'productos'), where('marca', '==', marcaId)));
-    return productosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Producto[];
+
+   const productosSnapshot = await getDocs(
+    query(collection(this.firestore, 'productos'), where('marca.id', '==', marcaId))
+  );
+  return productosSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as Producto[];
   }
 
 

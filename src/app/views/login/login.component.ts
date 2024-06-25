@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonLabel, IonList, IonItem, IonCard, IonInput, IonSpinner, IonButtons, IonButton, IonIcon, IonImg, IonCol, IonRow, IonBackButton, IonGrid } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonCardHeader, IonCardContent,IonCardTitle, IonContent, IonLabel, IonList, IonItem, IonCard, IonInput, IonSpinner, IonButtons, IonButton, IonIcon, IonImg, IonCol, IonRow, IonBackButton, IonGrid } from '@ionic/angular/standalone';
 import { FormsModule } from '@angular/forms';
 import { IoniconsModule } from '../../common/modules/ionicons.module';
 import { FirestoreService } from 'src/app/common/services/firestore.service';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { AlertController, IonicModule } from '@ionic/angular';
 import * as bcrypt from 'bcryptjs';
 import { Auth } from '@angular/fire/auth';
+import { AuthService } from 'src/app/common/services/auth.service';
 
 
 
@@ -16,65 +17,42 @@ import { Auth } from '@angular/fire/auth';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [IonGrid, IonBackButton, IonRow, IonCol, IonImg, IonList, IonLabel, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput,
+  imports: [IonGrid, IonBackButton, IonCardHeader, IonCardTitle, IonRow, IonCol, IonImg, IonList, IonLabel, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput,
     IonIcon, IonButton, IonButtons, IonSpinner, IonInput, IonCard,
     FormsModule,
     IoniconsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule, IonCardContent,
   ],
 })
 export class LoginComponent  {
 
-  loginForm: FormGroup;
-  email: string = '';
+ email: string = '';
   password: string = '';
-  loginError: boolean = false;
-  loginSuccess: boolean = false;
 
 constructor(
     private firestoreService: FirestoreService,
     private router: Router,
     private alertController: AlertController,
     private fb: FormBuilder,
-    private auth: Auth
+    private authService: AuthService
 
-  ) {
-    this.loginForm = this.fb.group({
-      dni: ['', Validators.required],
-      password: ['', Validators.required]
-    });
+  ) {}
+
+
+
+ login() {
+    this.authService.login(this.email, this.password);
+     this.router.navigate(['/home']);
   }
 
 
-  async login() {
-    if (this.loginForm.valid) {
-      const { dni, password } = this.loginForm.value;
-
-      try {
-        const user = await this.firestoreService.loginUser(dni, password);
-        if (user) {
-          const userId = localStorage.getItem('userId');
-          console.log('Inicio de sesión exitoso:', userId);
-          this.loginSuccess = true;
-          await this.mostrarAlerta('Éxito', 'Inicio de sesión exitoso.');
-
-          setTimeout(() => {
-            this.router.navigateByUrl('/home');
-          }, 1000);
-        } else {
-          this.loginError = true;
-          this.mostrarAlertaError('Credenciales incorrectas. Por favor, inténtalo de nuevo.');
-        }
-      } catch (error) {
-        console.error('Error al iniciar sesión:', error);
-        this.mostrarAlertaError('Ocurrió un error al iniciar sesión.');
-      }
-    } else {
-      this.mostrarAlertaError('Por favor, completa todos los campos correctamente.');
-    }
+navigateToRegister() {
+    this.router.navigate(['/register']);
   }
 
-
+navigateHome() {
+    this.router.navigate(['/home']);
+  }
 
 
 
